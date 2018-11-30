@@ -1,35 +1,115 @@
 
 <!DOCTYPE html>
 <html>
-  <head>
-    <style>
-      /* Set the size of the div element that contains the map */
-      #map {
-        height: 400px;  /* The height is 400 pixels */
-        width: 100%;  /* The width is the width of the web page */
-       }
-    </style>
-  </head>
-  <body>
-  	<!-- AIzaSyDl5QtjxZpr2nG891xGrdVvkVHcPj5RcRU -->
-    <h3>My Google Maps Demo</h3>
-    <!--The div element for the map -->
-    <div id="map"></div>
-    <script>
-// Initialize and add the map
-function initMap() {
-  // The location of Uluru
-  
-  var uluru = {lat: {{event.location.1}}, lng: {{event.location.0}} };
-  // The map, centered at Uluru
-  var map = new google.maps.Map(
-      document.getElementById('map'), {zoom: 4, center: uluru});
-  // The marker, positioned at Uluru
-  var marker = new google.maps.Marker({position: uluru, map: map});
-}
-    </script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkNz1eULOMdpQJg9T7v_V3yV6CQiMBrEM&callback=initMap">
-    </script>
-  </body>
+<head>
+  <style>
+  /* Set the size of the div element that contains the map */
+  #map {
+    height: 400px;  /* The height is 400 pixels */
+    width: 100%;  /* The width is the width of the web page */
+  }
+</style>
+</head>
+<body>
+ <!-- AIzaSyDl5QtjxZpr2nG891xGrdVvkVHcPj5RcRU -->
+ <h3>My Google Maps Demo</h3>
+ <!--The div element for the map -->
+ <div id="map"></div>
+ 
+<form action="/events/marker" method="POST">
+  <input type="text" name="lat" id="latbox" style="display: none;">
+  <input type="text" name="lng" id="lngbox" style="display: none;">
+  <input type="text" name="eventId" id="eventId" style="display: none;">
+  <input type="text" name="colour" id="color" style="display: none;">
+  <input type="submit" name="submit">
+</form>
+
+  <button type="button" onclick="setColor(0)"><span><img src="http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"></span>Help needed!</button>
+  <button type="button" onclick="setColor(1)"><span><img src="http://maps.google.com/mapfiles/ms/icons/red-dot.png"></span>Danger area</button>
+  <button type="button" onclick="setColor(2)"><span><img src="http://maps.google.com/mapfiles/ms/icons/green-dot.png"></span>RELIEF CAMPS! </button>
+  <ol>
+	<li>'weather':{{ weather.0}} ,{{description}} </li>
+    <li>'temp':{{ temp}} , </li>
+    <li>'pressure': {{ pressure }} </li>,
+    <li>'humidity': {{humidity}} ,</li>
+   <li> 'windspeed': {{ windspeed}}, </li>
+  <li> 'winddeg': {{winddeg}},</li>
+  </ol>
+	<form class="ui form" method="POST" action="/events/comment">
+	<div style="padding-right:50px" class="ui action input">
+	<input type="text" name="eventId" value="{{ event.id }}" style="display: none;">	
+	<input type="text" name="comment" placeholder="Enter your comments">
+	<button class="ui button">Submit</button>
+	</div>
+	</form>
+
+	{% for comment in comments %}
+	{{ commment.userName }},{{comment.userComment}}
+	<br>
+	{% endfor %}
+<script>
+  var marker;
+  var colour;
+  // Initialize and add the map
+  function initMap() {
+    var map_length = 5;
+    var event_id = "{{ event.id }}";
+    // The location of Uluru
+    var center_pos = {lat: {{event.location.1 }}, lng: {{event.location.0 }} };
+    var map = new google.maps.Map(
+      document.getElementById('map'), {zoom: 8, center: center_pos});
+    for(i=0; i< {{ safeLocation|length }}; i++){
+      var marked_place = {lat: 12.6344334+2*i, lng: 12.6344334 +5 * i };
+      marker = new google.maps.Marker({position: marked_place, map: map});
+    }
+
+    var user_place = center_pos;
+
+    marker = new google.maps.Marker({
+
+      position: user_place,
+      map: map,
+      draggable:true,
+      title:"Drag me!"
+    });
+
+    marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
+
+    google.maps.event.addListener(marker, 'dragend', function (evt) {
+    document.getElementById("latbox").value = evt.latLng.lat().toFixed(3);
+    document.getElementById("lngbox").value = evt.latLng.lng().toFixed(3);
+    document.getElementById("eventId").value = event_id;
+    var color_png = this.icon.slice(41);
+    if(color_png == "yellow-dot.png"){
+      colour = 0;
+    }else if(color_png == "red-dot.png"){
+      colour = 1;
+    }else{
+      colour = 2;
+    }
+    document.getElementById("color").value = colour;
+    document.getElementById("eventId").value = event_id;
+    });
+
+
+  }
+  function setColor(color){
+    if(color == 0){
+      colour = 0;
+      marker.setIcon("http://maps.google.com/mapfiles/ms/icons/yellow-dot.png");
+    }else if(color == 1){
+      colour  = 1;
+      marker.setIcon("http://maps.google.com/mapfiles/ms/icons/red-dot.png");
+    }else if(color == 2){
+      colour = 2;
+      marker.setIcon("http://maps.google.com/mapfiles/ms/icons/green-dot.png");
+    }
+    document.getElementById("color").value = colour;
+  }
+</script>
+
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkNz1eULOMdpQJg9T7v_V3yV6CQiMBrEM&callback=initMap">
+</script>
+</body>
 </html>
