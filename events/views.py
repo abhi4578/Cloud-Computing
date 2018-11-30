@@ -38,7 +38,25 @@ def index(request):
 		print("*"*100)	
 	# for event in phq.events.search(category="disasters",state="active"):
 	#     print(event.description, event.category, event.title, event.start.strftime('%Y-%m-%d'))
+	return render(request,'listOfEvents.html',{'events':results})
 
-	return HttpResponse("Done")    
+def eventDetail(request,eventId):
+	url = "https://api.predicthq.com/v1/events/"
+	ACCESS_TOKEN = "h8jTYSTHTta2o84n9WfahbIO2eRC9S"
+	payload={
+	'id' : eventId
+	}
+	headers={
+	'Accept': 'application/json',
+	'Authorization': "Bearer " + ACCESS_TOKEN
+	}
+	r = requests.get(url, params=payload,headers=headers)
+	#print(eventId)
+	results = r.json()['results']
+	print(results)
+	results = results[0]
+
+	return render(request,'eventDetail.html',{'event':results})
+
 
 
