@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>OneLyf</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{% static 'css/maint.css' %}" />
+	</head>
+	<body class="homepage is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				
+
+					<!-- Inner -->
+					
+					<!-- Nav -->
+						<nav id="nav">
+							<ul>
+								<li><a href="index.html">Home</a></li>
+								<li><a href="left-sidebar.html">Weather Forecast</a></li>
+								<li><a href="right-sidebar.html">Donation Portal</a></li>
+								<li><a href="{% url "login" %}">Login</a></li>
+								<li><a href="{% url "signup" %}">SignUp</a></li>
+							</ul>
+						</nav>
+
+
+		
+			<div class="content">
+				{% block content %}
+				{% endblock %}
+			</div>	
+			
+
+			
+		</div>
+
+
+
+	</body>
+</html>
