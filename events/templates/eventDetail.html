@@ -42,6 +42,13 @@
 	<button class="ui button">Submit</button>
 	</div>
 	</form>
+  <form class="ui form" method="POST" action="/events/twitter">
+  <div style="padding-right:50px" class="ui action input">
+  <input type="text" name="eventId" value="{{ event.id }}" style="display: none;">  
+ 
+  <button class="ui button">Tweets</button>
+  </div>
+  </form>
 
 	{% for comment in comments %}
 	{{ commment.userName }},{{comment.userComment}}

@@ -7,6 +7,7 @@ urlpatterns = [
     path('',views.index),
     path('marker',views.mapMarker, name="marker"),
     path('comment',views.comments),
+    path('twitter',views.twitter),
     path('<str:eventId>',views.eventDetail),
     
 

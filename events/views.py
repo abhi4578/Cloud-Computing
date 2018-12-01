@@ -56,18 +56,18 @@ def eventDetail(request,eventId):
 	r = requests.get(url, params=payload,headers=headers)
 	#print(eventId)
 	results = r.json()['results']
-	print(results)
+	#print(results)
 	results = results[0]
 	longi = results['location'][0]
 	lat = results['location'][1]
 	api = "147b79daa29884e1dab8fac91b7526d6"
-	print(type(lat))
+	#print(type(lat))
 	url = "http://api.openweathermap.org/data/2.5/weather?lat="+str(lat)+"&lon="+str(longi)+"&appid="+api;
 	response = requests.get(url)
-	print(type(response))
-	print(response.text)
+	#print(type(response))
+	#print(response.text)
 	res = response.json()
-	print(lat,longi)
+	#print(lat,longi)
 	#print(data)
 	temp = res['main']['temp']
 	pressure = res['main']['pressure']
@@ -82,9 +82,9 @@ def eventDetail(request,eventId):
 	mainweather	= res['weather'][0]['main']
 	description = res['weather'][0]['description']
 
-	print(temp)
-	print(mainweather)
-	print(description)
+	# print(temp)
+	# print(mainweather)
+	# print(description)
 	safeLocation = []
 	dangerLocation = []
 	helpLocation = []
@@ -96,7 +96,7 @@ def eventDetail(request,eventId):
 		di['latitude'] = float(i.latitude)
 		di['longitude'] = float(i.longitude)
 		safeList.append(di)
-	print(safeList)	
+	#print(safeList)	
 
 
 	dangerObj = DangerLocation.objects.all().filter(eventId=eventId)
@@ -106,7 +106,7 @@ def eventDetail(request,eventId):
 		di['latitude'] = float(i.latitude)
 		di['longitude'] = float(i.longitude)
 		safeList.append(di)
-	print(dangerList)	
+	#print(dangerList)	
 
 	helpObj = HelpLocation.objects.all().filter(eventId=eventId)
 	helpList = []
@@ -115,7 +115,7 @@ def eventDetail(request,eventId):
 		di['latitude'] = float(i.latitude)
 		di['longitude'] = float(i.longitude)
 		safeList.append(di)
-	print(helpList)	
+	#print(helpList)	
 	
 
 	try:
@@ -125,23 +125,52 @@ def eventDetail(request,eventId):
 		obj.save()
 
 	comments = UserComments.objects.all().filter(eventId=eventId)
-	print(type(comments))
+	#print(type(comments))
 	newsapi = NewsApiClient(api_key='e24ec206782a42b281d998e51d1dc9ac')
 
 	query = results['title'].split('-')
 
 	queries = query[0]+' AND ' +query[2]
-	print(queries)
+	#print(queries)
 	all_articles = newsapi.get_everything(q=queries,
                                       sources='bbc-news,the-verge,google-news',
                                       language='en',
                                       sort_by='relevancy',
                                       )
 	print(type(all_articles))
-	print(all_articles)
+	#print(all_articles)
 	
 	
 	print(results['id'])
+	ACCESS_TOKEN = "AAAAAAAAAAAAAAAAAAAAANkH9AAAAAAAorENrW%2Bt7Y4uQwZMJr43ZcWTIaY%3DXWlT3Xuacow4mmAvkKEC4EPdjY0TTL9VClG3PU8vHSR5nBj0v9"
+	url = "https://api.twitter.com/1.1/search/tweets.json"
+	headers={
+	'Accept': 'application/json',
+	'Authorization': "Bearer " + ACCESS_TOKEN,
+	#'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8.',
+	
+	}
+	payload={
+	'grant_type':'client_credentials',
+	'q':'#disaster',
+	'geocode': str(longi)+","+str(lat)+",10000mi"
+	}
+	r = requests.get(url,headers=headers,params=payload)
+	tweets = r.json()
+	print(tweets)
+	tweets = tweets['statuses']
+	#print(tweets)
+	tweetList = []
+	print(longi,lat)
+	for i in tweets:
+		di = {}
+		di['created_at'] = i['created_at']
+		di['text'] = i['text']
+		di['user'] = i['user']['name']
+		tweetList.append(di)
+		#print(i)
+		#print(100*'-')
+	print(tweetList)	
 
 	return render(request,'eventDetail.html',{'event':results,
 											  'weather':[mainweather,description],
@@ -197,5 +226,55 @@ def comments(requests):
 	commObj = UserComments.objects.create(userName=requests.user,eventId=eventObj,userComment=comment)
 	commObj.save()
 	return redirect("/events/"+eventId)
+
+def twitter(request):
+	print("Inside twitter")
+	# eventId = request.POST.get('eventId')
+	# base64 = "RDVZaDBCSjY3NHhtbkt1cXV0ajU5dk80dTphVFZNS2xxU2tZcmpEaFdBMDVYajliWG1vcUNxckhteGhyNm5oUGZqNnZ3OWlQeGhqUQ=="
+	# url = "https://api.twitter.com/oauth2/token"
+	# payload={
+	# 'grant_type':'client_credentials',
+	# }
+	# headers={
+	# 'Accept': 'application/json',
+	# 'Authorization': "Basic " + base64,
+	# 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8.',
+	
+	# }
+
+	# r = requests.post(url,params=payload,headers=headers)
+	ACCESS_TOKEN = "AAAAAAAAAAAAAAAAAAAAANkH9AAAAAAAorENrW%2Bt7Y4uQwZMJr43ZcWTIaY%3DXWlT3Xuacow4mmAvkKEC4EPdjY0TTL9VClG3PU8vHSR5nBj0v9"
+	url = "https://api.twitter.com/1.1/search/tweets.json"
+	headers={
+	'Accept': 'application/json',
+	'Authorization': "Bearer " + ACCESS_TOKEN,
+	#'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8.',
+	
+	}
+	payload={
+	'grant_type':'client_credentials',
+	'q':'#disaster',
+	'geocode': "37.781157,-122.398720,100mi"
+	}
+	r = requests.get(url,headers=headers,params=payload)
+	tweets = r.json()
+	tweets = tweets['statuses']
+	#print(tweets)
+	tweetList = []
+	for i in tweets:
+		di = {}
+		di['created_at'] = i['created_at']
+		di['text'] = i['text']
+		di['user'] = i['user']['name']
+		tweetList.append(di)
+		#print(i)
+		#print(100*'-')
+	for i in tweetList:
+		print(i)
+	return HttpResponse("Twitter")
+
+
+
+
 
 
