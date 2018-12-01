@@ -42,13 +42,13 @@
 	<button class="ui button">Submit</button>
 	</div>
 	</form>
-  <form class="ui form" method="POST" action="/events/twitter">
+<!--   <form class="ui form" method="POST" action="/events/twitter">
   <div style="padding-right:50px" class="ui action input">
   <input type="text" name="eventId" value="{{ event.id }}" style="display: none;">  
  
   <button class="ui button">Tweets</button>
   </div>
-  </form>
+  </form> -->
 
 	{% for comment in comments %}
 	{{ commment.userName }},{{comment.userComment}}
@@ -56,7 +56,7 @@
 	{% endfor %}
   <div class="four wide column" style="float: left">
   <div class="news">
-    {% for article in articles.articles %}
+    {% for article in articles.articles|slice:"0:3" %}
     <div class="ui card">
       <div class="image">
         <img src="{{article.urlToImage}}">
@@ -80,6 +80,13 @@
     {%endfor%}
   </div>
 </div>
+<div>
+  {% for tweet in tweets %}
+  <h4> {{ tweet.user}} </h4>
+  <p> {{ tweet.text }}</p>
+  <p> {{tweet.created_at }} </p>
+  {% endfor %}
+</div>
 
 <script>
   var marker;
@@ -92,6 +99,10 @@
     var center_pos = {lat: {{event.location.1 }}, lng: {{event.location.0 }} };
     var map = new google.maps.Map(
       document.getElementById('map'), {zoom: 8, center: center_pos});
+    var infowindow1 = new Object();
+    infowindow1 = {}
+    var marker1 = new Object();
+    marker1 = {}
     //for(i=0; i< {{ safeLocation|length }}; i++){
     {% for i in safeLocation %}
       //console.log( "{{i}}" ) 
@@ -99,28 +110,71 @@
       var lati = Number({{i.latitude}});
       var long = Number({{i.longitude}});
       var marked_place = {lat: lati, lng: long };
-      var marker1 = new google.maps.Marker({position: marked_place, map: map});
-      marker1.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
-    {% endfor %}
 
+      marker1["{{i.latitude}}-{{i.longitude}}"] = new google.maps.Marker({position: marked_place, map: map});
+      infowindow1["{{i.latitude}}-{{i.longitude}}"] = new google.maps.InfoWindow({
+          content: "{{i.userName}}"
+        });
+      marker1["{{i.latitude}}-{{i.longitude}}"].addListener('mouseover', function() {
+          infowindow1["{{i.latitude}}-{{i.longitude}}"].open(map, marker1["{{i.latitude}}-{{i.longitude}}"]);
+          console.log('Yes');
+      });
+
+      // assuming you also want to hide the infowindow when user mouses-out
+      marker1["{{i.latitude}}-{{i.longitude}}"].addListener('mouseout', function() {
+          infowindow1["{{i.latitude}}-{{i.longitude}}"].close();
+      });
+      marker1["{{i.latitude}}-{{i.longitude}}"].setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
+    {% endfor %}
+    var infowindow2 = new Object();
+    infowindow2 = {}
+    var marker2 = new Object();
+    marker2 = {}
     {% for i in dangerLocation %}
       //console.log( "{{i}}" ) 
       console.log( "{{i.latitude}}, {{i.longitude}}" );
       var lati = Number({{i.latitude}});
       var long = Number({{i.longitude}});
       var marked_place = {lat: lati, lng: long };
-      var marker2 = new google.maps.Marker({position: marked_place, map: map});
-      marker2.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
-    {% endfor %}
+      marker2["{{i.latitude}}-{{i.longitude}}"] = new google.maps.Marker({position: marked_place, map: map});
+      infowindow2["{{i.latitude}}-{{i.longitude}}"] = new google.maps.InfoWindow({
+          content: "{{i.userName}}"
+        });
+      marker2["{{i.latitude}}-{{i.longitude}}"].addListener('mouseover', function() {
+          infowindow2["{{i.latitude}}-{{i.longitude}}"].open(map, marker2["{{i.latitude}}-{{i.longitude}}"]);
+          console.log('Yes');
+      });
 
+      // assuming you also want to hide the infowindow when user mouses-out
+      marker2["{{i.latitude}}-{{i.longitude}}"].addListener('mouseout', function() {
+          infowindow2["{{i.latitude}}-{{i.longitude}}"].close();
+      });
+      marker2["{{i.latitude}}-{{i.longitude}}"].setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
+    {% endfor %}
+    var infowindow3 = new Object();
+    infowindow3 = {}
+    var marker3 = new Object();
+    marker3 = {}
     {% for i in helpLocation %}
       //console.log( "{{i}}" ) 
       console.log( "{{i.latitude}}, {{i.longitude}}" );
       var lati = Number({{i.latitude}});
       var long = Number({{i.longitude}});
       var marked_place = {lat: lati, lng: long };
-      var marker3 = new google.maps.Marker({position: marked_place, map: map});
-      marker3.setIcon('http://maps.google.com/mapfiles/ms/icons/yellow-dot.png')
+      marker3["{{i.latitude}}-{{i.longitude}}"] = new google.maps.Marker({position: marked_place, map: map});
+      infowindow3["{{i.latitude}}-{{i.longitude}}"] = new google.maps.InfoWindow({
+          content: "{{i.userName}}"
+        });
+      marker3["{{i.latitude}}-{{i.longitude}}"].addListener('mouseover', function() {
+          infowindow3["{{i.latitude}}-{{i.longitude}}"].open(map, marker3["{{i.latitude}}-{{i.longitude}}"]);
+          console.log('Yes');
+      });
+
+      // assuming you also want to hide the infowindow when user mouses-out
+      marker3["{{i.latitude}}-{{i.longitude}}"].addListener('mouseout', function() {
+          infowindow3["{{i.latitude}}-{{i.longitude}}"].close();
+      });
+      marker3["{{i.latitude}}-{{i.longitude}}"].setIcon('http://maps.google.com/mapfiles/ms/icons/yellow-dot.png')
     {% endfor %}
 
 
@@ -134,7 +188,7 @@
       title:"Drag me!"
     });
 
-    marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
+    marker.setIcon('http://maps.google.com/mapfiles/ms/icons/black-dot.png')
 
     google.maps.event.addListener(marker, 'dragend', function (evt) {
     document.getElementById("latbox").value = evt.latLng.lat().toFixed(3);

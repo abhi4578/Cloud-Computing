@@ -5,11 +5,10 @@ import requests
 from events.models import SafeLocation, DangerLocation, HelpLocation, Event\
 							,UserComments
 from newsapi import NewsApiClient							
-
+from django.contrib.auth.models import User
 # Create your views here.
 
 def index(request):
-
 	url = "https://api.predicthq.com/v1/events/"
 	ACCESS_TOKEN = "h8jTYSTHTta2o84n9WfahbIO2eRC9S"
 	payload={
@@ -28,12 +27,8 @@ def index(request):
 	#print(results)
 	count = 0
 	for i in results:
-		
-		
 		if 'vehicle-accident' in i['labels']:
-			results.pop(count)
-
-		
+			results.pop(count)	
 		count = count + 1
 
 	for i in results:
@@ -95,6 +90,8 @@ def eventDetail(request,eventId):
 		di = {}
 		di['latitude'] = float(i.latitude)
 		di['longitude'] = float(i.longitude)
+		# userObj = User.objects.get(id=i.userName)
+		di['userName'] = i.userName.username
 		safeList.append(di)
 	#print(safeList)	
 
@@ -105,6 +102,8 @@ def eventDetail(request,eventId):
 		di = {}
 		di['latitude'] = float(i.latitude)
 		di['longitude'] = float(i.longitude)
+		#userObj = User.objects.get(id=i.userName)
+		di['userName'] = i.userName.username
 		safeList.append(di)
 	#print(dangerList)	
 
@@ -114,6 +113,8 @@ def eventDetail(request,eventId):
 		di = {}
 		di['latitude'] = float(i.latitude)
 		di['longitude'] = float(i.longitude)
+		#userObj = User.objects.get(id=i.userName)
+		di['userName'] =  i.userName.username
 		safeList.append(di)
 	#print(helpList)	
 	
@@ -130,14 +131,38 @@ def eventDetail(request,eventId):
 
 	query = results['title'].split('-')
 
-	queries = query[0]+' AND ' +query[2]
-	#print(queries)
+	queries = query[0]+' AND ' + query[-1]
+	print(queries)
+	new_query = query[1:-1]
+
+	sources = ''
+	string = ""
+	for q in new_query:
+		string = string + str(q)
+
+
+	# if len(query) == 4:
+	# 	if string.replace(' ','') == "United-Kingdom":
+	# 		sources = "the-guardian-uk"
+	# 		country= "gb"		
+	# 	if string.replace(' ','') == "Australia":
+	# 		sources = "the-guardian-au"
+	# 		country = "au"	
+	# 	if query[-1].replace(' ','') == "India":
+	# 		sources = "the-times-of-india"
+	# 		country = "in"
+	# 	if query[-1].replace(' ','')	== "China":
+	# 		sources = "xinhua-net"
+	# 		country = "cn"	
+
+
 	all_articles = newsapi.get_everything(q=queries,
-                                      sources='bbc-news,the-verge,google-news',
+                                      sources='bbc-news,reddit-r-all,the-new-york-times,al-jazeera-english,the-times-of-india,the-hindu,google-news',
                                       language='en',
                                       sort_by='relevancy',
                                       )
 	print(type(all_articles))
+	print(all_articles)
 	#print(all_articles)
 	
 	
@@ -153,11 +178,11 @@ def eventDetail(request,eventId):
 	payload={
 	'grant_type':'client_credentials',
 	'q':'#disaster',
-	'geocode': str(longi)+","+str(lat)+",10000mi"
+	'geocode': str(lat)+","+str(longi)+",50mi"
 	}
 	r = requests.get(url,headers=headers,params=payload)
 	tweets = r.json()
-	print(tweets)
+	#print(tweets)
 	tweets = tweets['statuses']
 	#print(tweets)
 	tweetList = []
@@ -183,7 +208,8 @@ def eventDetail(request,eventId):
 											  'dangerLocation': dangerObj,
 											  'helpLocation': helpObj,
 											  'comments': comments,
-											  'articles': all_articles
+											  'articles': all_articles,
+											  'tweets': tweetList
 												})
 
 def mapMarker(request):
@@ -198,24 +224,29 @@ def mapMarker(request):
 			obj = Event.objects.get(eventId=eventId)
 			obj = HelpLocation.objects.create(eventId=obj,
 										latitude=lat,
-										longitude=lng)
+										longitude=lng,
+										userName=request.user)
 			obj.save()
 		if color == '1':
 			print('Red')
 			obj = Event.objects.get(eventId=eventId)
 			obj = DangerLocation.objects.create(eventId=obj,
 										latitude=lat,
-										longitude=lng)
+										longitude=lng,
+										userName=request.user
+										)
 			obj.save()
 		if color == '2':
 			obj = Event.objects.get(eventId=eventId)
 			obj = SafeLocation.objects.create(eventId=obj,
 										latitude=lat,
-										longitude=lng)
+										longitude=lng,
+										userName=request.user
+										)
 			obj.save()	
 				
 	#SafeLocation.objects.create()
-	return HttpResponse("Done")
+	return redirect("/events/"+eventId)
 
 def comments(requests):
 	print(requests.POST)

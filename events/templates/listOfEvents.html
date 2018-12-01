@@ -4,17 +4,21 @@
 	<title>Events</title>
 </head>
 <body>
+	
 	{% for event in events %}
-	{% for choice in event.items %}
-	{{ choice.0}}-{{choice.1}}
-	{% if choice.0 == 'id' %}
-	<a href="/events/{{choice.1}}">Click Here </a>
-	{% endif %}
-	<br>
-	{% endfor %}
-	<br>
-	<br>
-	<br>
+	<div class="panel panel-danger">
+		{% for choice in event.items %}
+		{{ choice.0}}-{{choice.1}}
+		{% if choice.0 == 'title' %}
+		<div class="panel-heading"><a href="/events/{{event.id}}">{{choice.1}}</a></div>
+		{% endif %}
+		<br>
+		{% endfor %}
+		<br>
+		<br>
+		<br>
+	</div>
+
 	{% endfor %}
 
 </body>

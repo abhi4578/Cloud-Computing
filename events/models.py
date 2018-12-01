@@ -6,16 +6,19 @@ class Event(models.Model):
 	eventId = models.CharField(max_length=100, null=False,default=None,primary_key=True)
 
 class SafeLocation(models.Model):
+	userName = models.ForeignKey(User,on_delete=models.CASCADE,default=0)
 	eventId = models.ForeignKey(Event,on_delete=models.CASCADE)	
 	latitude = models.DecimalField(max_digits=10,decimal_places=5, null=True,default=None)
 	longitude = models.DecimalField(max_digits=10,decimal_places=5, null=True,default=None)
 
 class DangerLocation(models.Model):
+	userName = models.ForeignKey(User,on_delete=models.CASCADE,default=0)
 	eventId = models.ForeignKey(Event,on_delete=models.CASCADE)	
 	latitude = models.DecimalField(max_digits=10,decimal_places=5, null=True,default=None)
 	longitude = models.DecimalField(max_digits=10,decimal_places=5, null=True,default=None)
 
 class HelpLocation(models.Model):
+	userName = models.ForeignKey(User,on_delete=models.CASCADE,default=0)
 	eventId = models.ForeignKey(Event,on_delete=models.CASCADE)	
 	latitude = models.DecimalField(max_digits=10,decimal_places=5, null=True,default=None)
 	longitude = models.DecimalField(max_digits=10,decimal_places=5, null=True,default=None)		
