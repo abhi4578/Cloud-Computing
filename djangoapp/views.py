@@ -8,10 +8,10 @@ from django.contrib.auth.models import User
 from django.contrib import auth
 
 def login(request):
-	print("Hitting Home Page Successfull")
+	print("Hitting Home Page Successfull 1111")
 
 	#return HttpResponse("Done and dusted")
-	return render(request,'app/login.html')
+	return render(request,'landing/login.html')
 
 def logout(request):
 	auth.logout(request)

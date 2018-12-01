@@ -85,10 +85,37 @@
     var center_pos = {lat: {{event.location.1 }}, lng: {{event.location.0 }} };
     var map = new google.maps.Map(
       document.getElementById('map'), {zoom: 8, center: center_pos});
-    for(i=0; i< {{ safeLocation|length }}; i++){
-      var marked_place = {lat: 12.6344334+2*i, lng: 12.6344334 +5 * i };
-      marker = new google.maps.Marker({position: marked_place, map: map});
-    }
+    //for(i=0; i< {{ safeLocation|length }}; i++){
+    {% for i in safeLocation %}
+      //console.log( "{{i}}" ) 
+      console.log( "{{i.latitude}}, {{i.longitude}}" );
+      var lati = Number({{i.latitude}});
+      var long = Number({{i.longitude}});
+      var marked_place = {lat: lati, lng: long };
+      var marker1 = new google.maps.Marker({position: marked_place, map: map});
+      marker1.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
+    {% endfor %}
+
+    {% for i in dangerLocation %}
+      //console.log( "{{i}}" ) 
+      console.log( "{{i.latitude}}, {{i.longitude}}" );
+      var lati = Number({{i.latitude}});
+      var long = Number({{i.longitude}});
+      var marked_place = {lat: lati, lng: long };
+      var marker2 = new google.maps.Marker({position: marked_place, map: map});
+      marker2.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
+    {% endfor %}
+
+    {% for i in helpLocation %}
+      //console.log( "{{i}}" ) 
+      console.log( "{{i.latitude}}, {{i.longitude}}" );
+      var lati = Number({{i.latitude}});
+      var long = Number({{i.longitude}});
+      var marked_place = {lat: lati, lng: long };
+      var marker3 = new google.maps.Marker({position: marked_place, map: map});
+      marker3.setIcon('http://maps.google.com/mapfiles/ms/icons/yellow-dot.png')
+    {% endfor %}
+
 
     var user_place = center_pos;
 

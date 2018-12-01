@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 
 
 def login1(request):
-	print("Hitting Home Page Successfull")
+	print("Hitting Home Page Successfull111")
 
 	#return HttpResponse("Done and dusted")
 	return render(request,'landing/login.html')

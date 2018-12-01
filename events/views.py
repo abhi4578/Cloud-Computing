@@ -90,8 +90,33 @@ def eventDetail(request,eventId):
 	helpLocation = []
 
 	safeObj = SafeLocation.objects.all().filter(eventId=eventId)
+	safeList = []
+	for i in safeObj:
+		di = {}
+		di['latitude'] = float(i.latitude)
+		di['longitude'] = float(i.longitude)
+		safeList.append(di)
+	print(safeList)	
+
+
 	dangerObj = DangerLocation.objects.all().filter(eventId=eventId)
+	dangerList = []
+	for i in dangerObj:
+		di = {}
+		di['latitude'] = float(i.latitude)
+		di['longitude'] = float(i.longitude)
+		safeList.append(di)
+	print(dangerList)	
+
 	helpObj = HelpLocation.objects.all().filter(eventId=eventId)
+	helpList = []
+	for i in helpObj:
+		di = {}
+		di['latitude'] = float(i.latitude)
+		di['longitude'] = float(i.longitude)
+		safeList.append(di)
+	print(helpList)	
+	
 
 	try:
 		obj = Event.objects.get(eventId=eventId)
@@ -125,9 +150,9 @@ def eventDetail(request,eventId):
 											  'humidity':humidity,
 											  'windspeed':windspeed,
 											  'winddeg': winddeg,
-											  'safeLocation':safeLocation,
-											  'dangerLocation': dangerLocation,
-											  'helpLocation': helpLocation,
+											  'safeLocation':safeList,
+											  'dangerLocation': dangerObj,
+											  'helpLocation': helpObj,
 											  'comments': comments,
 											  'articles': all_articles
 												})
