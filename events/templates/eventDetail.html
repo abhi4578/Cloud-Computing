@@ -47,6 +47,33 @@
 	{{ commment.userName }},{{comment.userComment}}
 	<br>
 	{% endfor %}
+  <div class="four wide column" style="float: left">
+  <div class="news">
+    {% for article in articles.articles %}
+    <div class="ui card">
+      <div class="image">
+        <img src="{{article.urlToImage}}">
+      </div>
+      <div class="content">
+        <a href="{{article.url}}" class="header">{{article.title}}</a>
+        <div class="meta">
+          <span class="date">{{article.publishedAt}}</span>
+        </div>
+        <div class="description">
+          {{article.description}}
+        </div>
+      </div>
+      <div class="extra content">
+        <a>
+          <i class="user icon"></i>
+          {{article.source.name}}
+        </a>
+      </div>
+    </div>
+    {%endfor%}
+  </div>
+</div>
+
 <script>
   var marker;
   var colour;

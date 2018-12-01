@@ -4,6 +4,7 @@ from django.http import HttpResponse
 import requests
 from events.models import SafeLocation, DangerLocation, HelpLocation, Event\
 							,UserComments
+from newsapi import NewsApiClient							
 
 # Create your views here.
 
@@ -100,6 +101,20 @@ def eventDetail(request,eventId):
 
 	comments = UserComments.objects.all().filter(eventId=eventId)
 	print(type(comments))
+	newsapi = NewsApiClient(api_key='e24ec206782a42b281d998e51d1dc9ac')
+
+	query = results['title'].split('-')
+
+	queries = query[0]+' AND ' +query[2]
+	print(queries)
+	all_articles = newsapi.get_everything(q=queries,
+                                      sources='bbc-news,the-verge,google-news',
+                                      language='en',
+                                      sort_by='relevancy',
+                                      )
+	print(type(all_articles))
+	print(all_articles)
+	
 	
 	print(results['id'])
 
@@ -114,6 +129,7 @@ def eventDetail(request,eventId):
 											  'dangerLocation': dangerLocation,
 											  'helpLocation': helpLocation,
 											  'comments': comments,
+											  'articles': all_articles
 												})
 
 def mapMarker(request):
