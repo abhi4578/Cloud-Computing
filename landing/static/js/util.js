@@ -95,8 +95,19 @@
 			}, userConfig);
 
 			// Expand "target" if it's not a jQuery object already.
-				if (typeof config.target != 'jQuery')
-					config.target = $(config.target);
+				if (!(config.target instanceof jQuery)) {
+					if (typeof config.target === 'string') {
+						// Prevent interpretation of HTML fragments—only allow valid selectors
+						if (config.target.trim().charAt(0) === '<') {
+							// Invalid: HTML string not allowed for target
+							throw new Error('panel: "target" option must be a selector or jQuery object, not HTML');
+						}
+						config.target = $(config.target);
+					} else {
+						// Invalid: not a string or jQuery object
+						throw new Error('panel: "target" option must be a selector string or jQuery object');
+					}
+				}
 
 		// Panel.
 
